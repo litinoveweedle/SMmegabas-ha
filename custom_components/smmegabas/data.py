@@ -3,7 +3,7 @@ LINK="https://sequentmicrosystems.com/products/building-automation-8-layer-stack
 
 import megabas
 API = megabas
-DOMAIN = "SMmegabas"
+DOMAIN = "smmegabas"
 NAME_PREFIX = "smmb"
 SM_MAP = {
     #"button": {
@@ -94,32 +94,6 @@ SM_MAP = {
                     "get": "getUOut",
                     "set": "setUOut",
                 },
-        },
-        "4_20_i_out": {
-                "chan_no": 4,
-                "uom": "mA",
-                "min_value": 4.0,
-                "max_value": 20.0,
-                "step": 0.01,
-                "com": {
-                    "get": "get4_20Out",
-                    "set": "set4_20Out",
-                },
-        },
-        "od": {
-                "chan_no": 4,
-                "uom": "%",
-                "min_value": 0.0,
-                "max_value": 100.0,
-                "step": 0.01,
-                "com": {
-                    "get": "getOdPWM",
-                    "set": "setOdPWM"
-                },
-                "icon": {
-                    "on": "mdi:percent",
-                    "off": "mdi:percent"
-                }
         },
     },
 }

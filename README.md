@@ -7,6 +7,10 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
 
 ## Installation
 
+> This development version requires `sequent-ha-common==0.0.2`, which must be
+> published before deployment. All installed Sequent integration pins should be
+> updated and tested together.
+
 > If you already have HACS, I2C and File editor configured, you can skip to [The actual installation](#the-actual-installation)
 
 
@@ -42,23 +46,28 @@ seamlessly with Home Assistant, bringing all your custom functionality into the 
     - Repository is `SequentMicrosystems/SMmegabas-ha` and type is `Integration`
     - Once added, you can now search it in HACS menu and download it
 
-5. Add SMmegabas config in configuration.yaml
-    - In the sidebar, select `File editor` and start the add-on
-    - Click the folder icon from the top left corner and edit `configuration.yaml`
-    - At the end of the file append the SMmegabas config:
-        ```yaml
-        SMmegabas:
-        ```
-        > for more information, see [configuration.yaml](#configuration.yaml)
-    - Save the file
+5. Restart Home Assistant, then open **Settings > Devices & services**.
+6. Select **Add integration**, choose **Sequent Microsystems Building Automation Integration**, and enter the
+   card's stack address. Repeat for each card.
+7. Use **Configure** to choose entities and their update intervals.
 
-6. Reboot system
+### Upgrading from `SMmegabas`
 
-7. Reboot system (yes, it must be done twice)
+Back up Home Assistant first. Uninstall the old integration and install the
+updated one; Marketplace may require re-adding the repository. Ensure
+`custom_components/SMmegabas` is removed and only `custom_components/smmegabas`
+remains. Change the top-level `SMmegabas:` YAML key to `smmegabas:` and restart.
+Existing entity registry entries are migrated to the new domain; conflicting
+entries must be resolved before setup can continue.
 
+## Migrating from YAML
 
+Existing `smmegabas:` YAML is imported once. Check the entries under **Settings >
+Devices & services**, remove the YAML section and restart Home Assistant. Later
+YAML edits are not imported, and existing entries are not overwritten. Use the
+integration UI for further changes.
 
-## configuration.yaml
+The legacy examples below are retained for reference:
 
 `configuration.yaml` example:
 ```yaml
@@ -73,27 +82,27 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
-SMmegabas:
+smmegabas:
     # + optional configs
 ```
 
 - Simple stack 0 config:
 
 ```yaml
-SMmegabas:
+smmegabas:
 ```
 
 - Specific stack config:
 
 ```yaml
-SMmegabas:
+smmegabas:
     - stack: 2
 ```
 
 - Multiple cards on different stack levels:
 
 ```yaml
-SMmegabas:
+smmegabas:
     - stack: 0
     - stack: 2
     - stack: 3
@@ -104,7 +113,7 @@ SMmegabas:
 > !The following example is provided for illustrative purposes only and does NOT necessarily represent real entities!
 
 ```yaml
-SMmegabas:
+smmegabas:
     - stack: 0
       relay_1:
       relay_3:
@@ -126,8 +135,6 @@ SMmegabas:
 Possible entities:
 ```yaml
 contact_1: -> contact_4:  (type: binary_sensor)
-4_20_i_out_1: -> 4_20_i_out_4:  (type: number)
-od_1: -> od_4:  (type: number)
 u_out_1: -> u_out_4:  (type: number)
 card_volt_1: (type: sensor)
 contact_cnt_1: -> contact_cnt_4:  (type: sensor)
@@ -142,3 +149,20 @@ triac_1: -> triac_4:  (type: switch)
 Entity options:
 - `chan_range: "start..end"` (specify inclusive channel range)
 - `update_interval: seconds` (specify the update interval for `sensor` and `binary_sensor`, default 30s)
+
+The previously listed 4–20 mA and open-drain outputs have been removed because
+the Building Automation driver does not implement them. Remove any obsolete entities and YAML entries for these outputs.
+
+## Testing
+
+With Python 3.14, install `homeassistant==2026.11.1`,
+`pytest-homeassistant==2026.11.1`, and the integration requirements from the
+manifest, then run:
+
+```shell
+python -m pytest -p no:respx --asyncio-mode=auto -o asyncio_default_fixture_loop_scope=function tests
+```
+
+Tests simulate hardware and check the installed driver API. CI installs the
+manifest requirements from PyPI. The shared-library release must be published
+before that installation can succeed.
