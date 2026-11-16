@@ -153,6 +153,16 @@ Entity options:
 The previously listed 4–20 mA and open-drain outputs have been removed because
 the Building Automation driver does not implement them. Remove any obsolete entities and YAML entries for these outputs.
 
+## Optional capabilities
+
+Select these entities under **Configure**; existing entity selections are unchanged.
+
+Optional entities include `contact_edge_1..4`, `owb_count_1`, `owb_scan_1`, and `rtc_1`. The RTC uses UTC and is never synchronized automatically. One-Wire scan can change sensor indices. One-Wire temperatures are not exposed because negative-temperature encoding is not verified. When removing an enabled counter edge, the driver must briefly disable both edges before applying the new setting; pulses may be missed during that transition.
+
+Watchdog entities are `watchdog_reload_1` and `watchdog_period_1`.
+
+Watchdog entities are opt-in. Reloading may enable the watchdog; without a reliable reload automation it can power-cycle the Raspberry Pi. Set a suitable initial period for boot time. The integration does not reload it automatically.
+
 ## Testing
 
 With Python 3.14, install `homeassistant==2026.11.1`,

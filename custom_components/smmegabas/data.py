@@ -1,11 +1,38 @@
 FULL_NAME="Building Automation"
 LINK="https://sequentmicrosystems.com/products/building-automation-8-layer-stackable-hat-v4-for-raspberry-pi"
 
-import megabas
-API = megabas
+from . import driver_adapter
+API = driver_adapter
 DOMAIN = "smmegabas"
 NAME_PREFIX = "smmb"
 SM_MAP = {
+    "button": {
+        "watchdog_reload": {
+            "chan_no": 1,
+            "optional": True,
+            "com": {"set": "wdtReload"},
+        },
+        "owb_scan": {
+            "chan_no": 1,
+            "optional": True,
+            "com": {"set": "owbScan"},
+        },
+    },
+    "select": {
+        "contact_edge": {
+            "chan_no": 4,
+            "optional": True,
+            "com": {"get": "getContactCountEdge", "set": "set_contact_count_edge"},
+            "option_map": {"None": 0, "Rising": 1, "Falling": 2, "Both": 3},
+        },
+    },
+    "datetime": {
+        "rtc": {
+            "chan_no": 1,
+            "optional": True,
+            "com": {"get": "rtcGet", "set": "rtcSet"},
+        },
+    },
     #"button": {
     #    "contact_cnt_rst": {
     #        "chan_no": 4,
@@ -24,6 +51,11 @@ SM_MAP = {
         },
     },
     "sensor":  {
+        "owb_count": {
+                "chan_no": 1,
+                "optional": True,
+                "com": {"get": "owbGetSensorNo"},
+        },
         "u_in": {
                 "chan_no": 8,
                 "uom": "V",
@@ -84,6 +116,15 @@ SM_MAP = {
         }
     },
     "number": {
+        "watchdog_period": {
+                "chan_no": 1,
+                "optional": True,
+                "uom": "s",
+                "min_value": 10,
+                "max_value": 65000,
+                "step": 1,
+                "com": {"get": "wdtGetPeriod", "set": "wdtSetPeriod"},
+        },
         "u_out": {
                 "chan_no": 4,
                 "uom": "V",
