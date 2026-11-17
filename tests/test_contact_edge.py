@@ -30,7 +30,9 @@ def test_edge_selection_clears_previous_bits(monkeypatch, old, new):
 
 def test_invalid_edge_does_not_change_settings(monkeypatch):
     writes = []
-    monkeypatch.setattr(megabas, "setContactCountEdge", lambda *args: writes.append(args))
+    monkeypatch.setattr(
+        megabas, "setContactCountEdge", lambda *args: writes.append(args)
+    )
     with pytest.raises(ValueError, match="Invalid"):
         set_contact_count_edge(0, 1, 4)
     assert not writes
